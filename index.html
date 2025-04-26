@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penghitung Gaji Real-Time</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            tosca: {
+              100: '#a0f0ed',
+              200: '#76e8e4',
+              300: '#4ce0db',
+              400: '#22d8d2',
+              500: '#00c9c3',
+              600: '#00b3ad',
+              700: '#009d98',
+              800: '#008783',
+              900: '#00716e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .neumorphism {
+      border-radius: 20px;
+      background: #f0f0f0;
+      box-shadow:  10px 10px 20px #d9d9d9,
+                  -10px -10px 20px #ffffff;
+    }
+    .neumorphism-inset {
+      border-radius: 15px;
+      background: #f0f0f0;
+      box-shadow: inset 5px 5px 10px #d9d9d9,
+                  inset -5px -5px 10px #ffffff;
+    }
+    .neumorphism-btn {
+      border-radius: 15px;
+      background: #f0f0f0;
+      box-shadow:  5px 5px 10px #d9d9d9,
+                  -5px -5px 10px #ffffff;
+      transition: all 0.2s ease;
+    }
+    .neumorphism-btn:active {
+      box-shadow: inset 3px 3px 6px #d9d9d9,
+                  inset -3px -3px 6px #ffffff;
+    }
+    .neumorphism-btn-tosca {
+      border-radius: 15px;
+      background: linear-gradient(145deg, #00c9c3, #00b3ad);
+      box-shadow:  5px 5px 10px #d9d9d9,
+                  -5px -5px 10px #ffffff;
+      color: white;
+      transition: all 0.2s ease;
+    }
+    .neumorphism-btn-tosca:active {
+      box-shadow: inset 3px 3px 6px #008783,
+                  inset -3px -3px 6px #00e0d8;
+    }
+    input:focus {
+      outline: none;
+      box-shadow: inset 3px 3px 6px #d9d9d9,
+                  inset -3px -3px 6px #ffffff,
+                  0 0 0 2px rgba(0, 201, 195, 0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+  <div class="neumorphism p-8 max-w-md w-full">
+    <h1 class="text-3xl font-bold mb-6 text-gray-700">Penghitung Gaji Real-Time</h1>
+    
+    <div class="mb-6">
+      <input 
+        type="number" 
+        id="hourlyRate" 
+        placeholder="Masukkan Gaji Per Jam (IDR)" 
+        class="neumorphism-inset w-full p-4 text-gray-700 focus:border-tosca-500 transition-all duration-200"
+      >
+    </div>
+    
+    <div class="flex gap-4 mb-8">
+      <button 
+        onclick="startTimer()" 
+        class="neumorphism-btn-tosca flex-1 py-3 px-4 font-medium"
+      >
+        Mulai
+      </button>
+      <button 
+        onclick="stopTimer()" 
+        class="neumorphism-btn flex-1 py-3 px-4 font-medium text-gray-700"
+      >
+        Berhenti
+      </button>
+    </div>
+    
+    <div class="neumorphism-inset p-6">
+      <div class="text-gray-500 mb-2">Total Gaji:</div>
+      <div id="salaryDisplay" class="text-4xl font-bold text-tosca-600">Rp 0</div>
+    </div>
+    
+    <div class="mt-6 text-sm text-gray-500">
+      Gaji akan bertambah setiap detik
+    </div>
+  </div>
+
+  <script>
+    let interval;
+    let totalSalary = 0;
+    let perSecondRate = 0;
+    
+    function startTimer() {
+      const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+      if (isNaN(hourlyRate) || hourlyRate <= 0) {
+        alert('Masukkan gaji per jam yang valid.');
+        return;
+      }
+      perSecondRate = hourlyRate / 3600; // karena 1 jam = 3600 detik
+      if (interval) clearInterval(interval);
+      
+      // Mulai menghitung per detik
+      interval = setInterval(() => {
+        totalSalary += perSecondRate;
+        updateDisplay();
+      }, 1000); // setiap 1 detik
+    
+      // Reset total gaji setiap kali timer dimulai
+      totalSalary = 0;
+      updateDisplay();
+      
+      // Add visual feedback
+      const startBtn = document.querySelector('button[onclick="startTimer()"]');
+      startBtn.classList.add('active:scale-95');
+      setTimeout(() => startBtn.classList.remove('active:scale-95'), 200);
+    }
+    
+    function stopTimer() {
+      clearInterval(interval);
+      
+      // Add visual feedback
+      const stopBtn = document.querySelector('button[onclick="stopTimer()"]');
+      stopBtn.classList.add('active:scale-95');
+      setTimeout(() => stopBtn.classList.remove('active:scale-95'), 200);
+    }
+    
+    function updateDisplay() {
+      document.getElementById('salaryDisplay').textContent = 'Rp ' + totalSalary.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    
+  </script>
+</body>
+</html>
